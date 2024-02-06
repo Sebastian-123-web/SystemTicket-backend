@@ -2,6 +2,10 @@ const express = require('express')
 const router = express.Router()
 const { getAllUsers } = require('./../controllers/user.controllers')
 
-router.get('/api/users', getAllUsers)
+const { getAllUserM } = require('./../model/user_model')
+
+///router.get('/api/users', getAllUsers)
+
+router.get('/users', getAllUserM)
 
 module.exports = router

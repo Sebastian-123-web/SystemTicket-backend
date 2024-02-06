@@ -1,8 +1,8 @@
-const {UserModel} = require('./../model/user_model')
+const {getAllUserM} = require('./../model/user_model')
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await UserModel.getAllUsersM()
+        const users = await getAllUsersM()
         res.json(users)
     } catch (error) {
         console.error('Error al obtener los usuarios: ',error)
