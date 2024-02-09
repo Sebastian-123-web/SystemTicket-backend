@@ -16,5 +16,5 @@ const PORT = process.env.PORT || 3000 // traemos la variable PORT
 app.use('/api', require('./routes/auth.routes'))
 
 app.listen(PORT,()=>{
-    console.log('Servidor corriendo', `http://localhost:${PORT}`)
+    console.log('Server running in', `http://localhost:${PORT}`)
 })
