@@ -4,17 +4,17 @@ const connection = require('../config/database_config')
 
 const secretKey = process.env.SECRET_KEY
 
-
+// OBTENERMOS LOS 
 const authUser = (req,res) => {
     const passClient = 'SF2021.'
-    const sql = `SELECT id_user,user_name,user_lastname FROM tbl_user WHERE user_email='rbanagasta@transberperu.com'`
+    const sql = `SELECT id_user FROM tbl_user WHERE user_email='rbanagasta@transberperu.com'`
 
     connection.query(sql, async(err, dataUser)=>{
         if(err) throw err
         const password = await getPassword(dataUser[0].id_user)
         if (validatePassword(password,passClient)) {
             const token = jwt.sign({id:dataUser[0].id_user},secretKey,{expiresIn:'1h'})
-            return res.status(200).json({token})
+            return res.status(200).json({tocken:token, id_user:dataUser[0].id_user})
         }
         res.status(401).json({message: 'Credenciales invalidas'})
     })
