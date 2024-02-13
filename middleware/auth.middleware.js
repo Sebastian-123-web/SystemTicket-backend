@@ -8,7 +8,7 @@ const secretKey = process.env.SECRET_KEY
 // OBTENERMOS LOS 
 const authUser = (req,res) => {
     const {user_email,passClient} = req.body
-    const sql = `SELECT id_user FROM tbl_user WHERE user_email='${user_email}'`
+    const sql = `SELECT id_user, user_access FROM tbl_user WHERE user_email='${user_email}'`
 
     connection.query(sql, async(err, dataUser)=>{
         if(err) throw err
