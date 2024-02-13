@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const connection = require('../config/database_config')
 
@@ -6,15 +7,15 @@ const secretKey = process.env.SECRET_KEY
 
 // OBTENERMOS LOS 
 const authUser = (req,res) => {
-    const passClient = 'SF2021.'
-    const sql = `SELECT id_user FROM tbl_user WHERE user_email='rbanagasta@transberperu.com'`
+    const {user_email,passClient} = req.body
+    const sql = `SELECT id_user FROM tbl_user WHERE user_email='${user_email}'`
 
     connection.query(sql, async(err, dataUser)=>{
         if(err) throw err
         const password = await getPassword(dataUser[0].id_user)
-        if (validatePassword(password,passClient)) {
+        if ( await validatePassword(password,passClient)) {
             const token = jwt.sign({id:dataUser[0].id_user},secretKey,{expiresIn:'1h'})
-            return res.status(200).json({tocken:token, id_user:dataUser[0].id_user})
+            return res.status(200).json({token:token, id_user:dataUser[0].id_user})
         }
         res.status(401).json({message: 'Credenciales invalidas'})
     })
@@ -40,10 +41,18 @@ const getPassword = (id_user) => {
 
 // VALIDAMOS QUE LA CONTRASEÑA QUE INGRESO EL USUARIO SEA IGUAL AL DE LA BASE DE DATOS
 const validatePassword = (passDB,passClient) => {
-    if(passDB==passClient){
-        return true
+    try {
+        const passValidateOrInvalidate = new Promise((resolve,reject)=>{ //INSTANCIAMOS LA PROMESA PARA EL ASYNC Y AWAIT ESPEREN LA RESPUESTA
+            bcrypt.compare(passClient,passDB, (err,result)=>{
+                if(err) reject(err)
+                resolve(result)
+            })
+        })
+        return passValidateOrInvalidate
+    } catch (error) {
+        console.error(error)
+        throw error
     }
-    return false
 }
 
 module.exports = { authUser }

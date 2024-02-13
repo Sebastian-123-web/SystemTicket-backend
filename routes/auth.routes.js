@@ -3,6 +3,6 @@ const router = express.Router()
 
 const { authUser } = require('../middleware/auth.middleware')
 
-router.get('/authuser', authUser)
+router.post('/authuser', authUser)
 
 module.exports = router
