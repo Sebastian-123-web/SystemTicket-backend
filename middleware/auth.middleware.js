@@ -15,7 +15,7 @@ const authUser = (req,res) => {
         const password = await getPassword(dataUser[0].id_user)
         if ( await validatePassword(password,passClient)) {
             const token = jwt.sign({id:dataUser[0].id_user},secretKey,{expiresIn:'1h'})
-            return res.status(200).json({token:token, id_user:dataUser[0].id_user})
+            return res.status(200).json({token:token, id_user:dataUser[0].id_user, access:dataUser[0].user_access})
         }
         res.status(401).json({message: 'Credenciales invalidas'})
     })
