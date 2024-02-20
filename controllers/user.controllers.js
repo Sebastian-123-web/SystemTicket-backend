@@ -1,11 +1,10 @@
-const { restart } = require('nodemon')
 const connection = require('../config/database_config')
 const bcrypt = require('bcrypt')
 
 
 /*
 *****************************************
-        REGISTRO DE USUARIO
+        RACTUALIZAR CONTRASEÑA
 *****************************************
 */
 
@@ -16,10 +15,10 @@ const createPassword = (req, res) => {
 }
 
 // ENCRIPTAMOS LA CONTRASEÑA
-const encryptPassword = (password,is_user) => {
+const encryptPassword = (password,id_user) => {
     bcrypt.hash(password,10, (err, hashedPassword)=>{
         if(err) throw err
-        const msg = savePasswordDB(is_user,hashedPassword) //GUARDAR EN BASE DE DATOS
+        const msg = savePasswordDB(id_user,hashedPassword) //GUARDAR EN BASE DE DATOS
         return msg
     })
 }
@@ -48,12 +47,20 @@ const userRegister = (req,res) => {
     })
 }
 
-const getIdUser = () => {
-
+const getIdUser = (user_email) => {
+    const querySQL = `SELECT id_user FROM tbl_user WHERE user_email='${user_email}'`
+    connection.query(querySQL, (err, result) => {
+        if(err) throw err
+        return result
+    })
 }
 
 const passwordUserRegister = () => {
-
+    const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${}, '${}')`
+    connection.query(querySQL, (err, result) => {
+        if(err) throw result
+        
+    })
 }
 
 
