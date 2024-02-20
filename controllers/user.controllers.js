@@ -4,31 +4,38 @@ const bcrypt = require('bcrypt')
 
 /*
 *****************************************
-        RACTUALIZAR CONTRASEÑA
+        ACTUALIZAR CONTRASEÑA
 *****************************************
 */
-
-const createPassword = (req, res) => {
+const updatePassword = (req, res) => {
     const { password,id_user } = req.body
-    const msg = encryptPassword(password,id_user)
-    return res.status(200).json({msg:msg})
+    console.log('1')
+    const passwordEncrypt = encryptPassword(password)
+    console.log('3')
+    console.log(passwordEncrypt)
+    if(savePasswordInDB(id_user,passwordEncrypt)){
+        res.status(200).json({msg:'Contraseña Actualizada'})
+    }
+    res.json({msg:'No se actualizo'})
 }
 
 // ENCRIPTAMOS LA CONTRASEÑA
-const encryptPassword = (password,id_user) => {
+const encryptPassword = (password) => {
     bcrypt.hash(password,10, (err, hashedPassword)=>{
         if(err) throw err
-        const msg = savePasswordDB(id_user,hashedPassword) //GUARDAR EN BASE DE DATOS
-        return msg
+        //console.log(hashedPassword)
+        console.log('2')
+        return hashedPassword
     })
 }
 
 // ACTUALIZA LA CONTRASEÑA ENCRIPTADA EN LA BASE DE DATOS
-const savePasswordDB = (id_user,password) => {
+const savePasswordInDB = (id_user,password) => {
     const querySQL = `UPDATE tbl_password SET password = '${password}' WHERE tbl_password.id_user = ${id_user}`
+    //console.log(querySQL)
     connection.query(querySQL, (err, result)=>{
         if(err) throw err
-        return 'Contraseña Actualizada'
+        return true
     })
 }
 
@@ -38,6 +45,7 @@ const savePasswordDB = (id_user,password) => {
         REGISTRO DE USUARIO
 *****************************************
 */
+
 const userRegister = (req,res) => {
     const { user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser } = req.body
     const querySQL = `INSERT INTO tbl_user (id_user, user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser, user_access) VALUES (NULL, '${user_name}', '${user_lastname}', '${user_photo}', '${user_email}', '${user_phone}', '${user_annex}', '${user_domainuser}', 'user')`
@@ -55,8 +63,9 @@ const getIdUser = (user_email) => {
     })
 }
 
-const passwordUserRegister = () => {
-    const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${}, '${}')`
+const userPasswordRegister = () => {
+    const id_user = getIdUser
+    const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${id_user}, '')`
     connection.query(querySQL, (err, result) => {
         if(err) throw result
         
@@ -64,8 +73,7 @@ const passwordUserRegister = () => {
 }
 
 
-
 module.exports = {
-    createPassword,
+    updatePassword,
     userRegister
 }
