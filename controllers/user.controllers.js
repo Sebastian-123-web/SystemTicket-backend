@@ -62,7 +62,7 @@ const encryptPassword = (id_user,password,sqlFunction) => {
 
 const userRegister = (req,res) => {
     const { user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser } = req.body
-    const querySQL = `INSERT INTO tbl_user (id_user, user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser, user_access) VALUES (NULL, '${user_name}', '${user_lastname}', '${user_photo}', '${user_email}', '${user_phone}', '${user_annex}', '${user_domainuser}', 'user')`
+    const querySQL = `INSERT INTO tbl_user (id_user, user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser, user_access) VALUES (NULL, '${user_name}', '${user_lastname}', '${user_photo}', '${user_email}', '${user_phone}', '0000', '${user_domainuser}', 'user')`
     connection.query(querySQL, (err,result)=>{
         if (err) throw err
         res.status(200).json({msg: 'Usuario agregado'})
@@ -77,13 +77,20 @@ const getIdUser = (user_email) => {
     })
 }
 
-const userPasswordRegister = (password) => {
-    const id_user = getIdUser
-    const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${id_user}, '${password}')`
-    connection.query(querySQL, (err, result) => {
-        if(err) throw result
-        
+const passwordRegisterDB = (id_user,password) => {
+    return new Promise((resolve,reject) => {
+        const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${id_user}, '${password}')`
+        connection.query(querySQL, (err, result) => {
+            if(err) reject(err)
+            resolve(true)
+        })
     })
+}
+
+const userRegisterPassword = () =>{
+    if(encryptPassword(getIdUser,pass,passwordRegisterDB)){
+
+    }
 }
 
 
