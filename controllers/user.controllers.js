@@ -58,23 +58,49 @@ const encryptPassword = (id_user,password,sqlFunction) => {
 ***********************************************
             REGISTRO DE USUARIO
 ***********************************************
+
+obtener los datos
+validar email resgitrado
+registro de usuario
+registrar contraseña
+mensaje de conformidad
+
 */
 
-/* obtendo los datos del frontend */
-const userRegister = (req,res) => {
-    const { user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser } = req.body
-    const querySQL = `INSERT INTO tbl_user (id_user, user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser, user_access) VALUES (NULL, '${user_name}', '${user_lastname}', '${user_photo}', '${user_email}', '${user_phone}', '${user_annex}', 'Ninguno', 'user')`
-    connection.query(querySQL, (err,result)=>{
-        if (err) throw err
-        res.status(200).json({msg: 'Usuario agregado'})
+/* obtendo los datos del frontend y ejecuta las funciones involucradas */
+const userRegister = async (req,res) => {
+    const { user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_password } = req.body
+
+    const id_user = await getIdUser(user_email)
+
+    if(id_user[0]?.id_user){
+        res.status(409).json({error:"El Email ya se encuentra registrado, ingrese uno diferente"})
+    }else if(registerDB(user_name, user_lastname, user_photo, user_email, user_phone, user_annex)){
+
+        encryptPassword(getIdUser(user_email),user_password,passwordRegisterDB)
+        res.status(200).json({msg:'Usuario registrado'})
+    }
+}
+
+/* registrar el usuario en la base de datos */
+const registerDB = (user_name, user_lastname, user_photo, user_email, user_phone, user_annex) => {
+    return new Promise((resolve,reject)=>{
+        const querySQL = `INSERT INTO tbl_user (id_user, user_name, user_lastname, user_photo, user_email, user_phone, user_annex, user_domainuser, user_access) VALUES (NULL, '${user_name}', '${user_lastname}', '${user_photo}', '${user_email}', '${user_phone}', '${user_annex}', 'Ninguno', 'user')`
+        connection.query(querySQL, (err,result)=>{
+            if (err) reject(err)
+            resolve(true)            
+        })
     })
 }
 
+/* verifica la existencia del EMAIL y obtiene el ID del usuario*/
 const getIdUser = (user_email) => {
-    const querySQL = `SELECT id_user FROM tbl_user WHERE user_email='${user_email}'`
-    connection.query(querySQL, (err, result) => {
-        if(err) throw err
-        return result
+    return new Promise((resolve,reject)=>{
+        const querySQL = `SELECT id_user FROM tbl_user WHERE user_email='${user_email}'`
+        connection.query(querySQL, (err, result) => {
+            if(err) reject(err)
+            resolve(result)
+        })
     })
 }
 
@@ -87,13 +113,6 @@ const passwordRegisterDB = (id_user,password) => {
         })
     })
 }
-
-const userRegisterPassword = () =>{
-    if(encryptPassword(getIdUser,pass,passwordRegisterDB)){
-
-    }
-}
-
 
 module.exports = {
     updatePassword,
