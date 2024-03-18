@@ -76,8 +76,8 @@ const userRegister = async (req,res) => {
     if(id_user[0]?.id_user){
         res.status(409).json({error:"El Email ya se encuentra registrado, ingrese uno diferente"})
     }else if(registerDB(user_name, user_lastname, user_photo, user_email, user_phone, user_annex)){
-
-        encryptPassword(getIdUser(user_email),user_password,passwordRegisterDB)
+        const id_user = await getIdUser(user_email)
+        encryptPassword(id_user[0]?.id_user,user_password,passwordRegisterDB)
         res.status(200).json({msg:'Usuario registrado'})
     }
 }
@@ -104,6 +104,7 @@ const getIdUser = (user_email) => {
     })
 }
 
+/* registrar contraseña encriptada en la Base de Datos */
 const passwordRegisterDB = (id_user,password) => {
     return new Promise((resolve,reject) => {
         const querySQL = `INSERT INTO tbl_password (id_user, password) VALUES (${id_user}, '${password}')`
