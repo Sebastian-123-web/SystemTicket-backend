@@ -8,16 +8,19 @@ const secretKey = process.env.SECRET_KEY
 // OBTENERMOS LOS 
 const authUser = (req,res) => {
     const {user_email,passClient} = req.body
+    if(!user_email){
+         return res.status(401).json({message: 'Credenciales invalidas'})
+    }
     const sql = `SELECT id_user, user_access FROM tbl_user WHERE user_email='${user_email}'`
 
     connection.query(sql, async(err, dataUser)=>{
         if(err) throw err
-        const password = await getPassword(dataUser[0].id_user)
+        const password = await getPassword(dataUser[0]?.id_user)
         if ( await validatePassword(password,passClient)) {
             const token = jwt.sign({id:dataUser[0].id_user},secretKey,{expiresIn:'1h'})
             return res.status(200).json({token:token, id_user:dataUser[0].id_user, access:dataUser[0].user_access})
         }
-        res.status(401).json({message: 'Credenciales invalidas'})
+        return res.status(401).json({message: 'Credenciales invalidas'})
     })
 }
 
@@ -28,7 +31,7 @@ const getPassword = (id_user) => {
         const result = new Promise((resolve,reject)=>{
             connection.query(`SELECT password FROM tbl_password WHERE id_user=${id_user}`, (err, result)=>{
                 if(err) reject(err)
-                resolve(result[0].password)
+                resolve(result[0]?.password)
             })
         })
         return result
