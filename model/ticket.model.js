@@ -1,0 +1,11 @@
+/* 
+✔️Titulo
+✔️descripcion
+✔️anydesk
+✔️dispositivo
+✔️importancia
+✔️imagen
+✔️correo
+🏁estado
+🏁fecha
+*/
