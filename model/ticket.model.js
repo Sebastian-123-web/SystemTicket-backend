@@ -1,11 +1,23 @@
 /* 
-✔️Titulo
-✔️descripcion
-✔️anydesk
-✔️dispositivo
-✔️importancia
-✔️imagen
+🏁estado *
+✔️Titulo *
+🏁fecha credo *
+✔️importancia *
+✔️descripcion *
+✔️anydesk *
+✔️dispositivo *
+✔️imagen *
 ✔️correo
-🏁estado
-🏁fecha
+🏁fecha cerrado *
+
+ACTIVIDADES
+nuevo ticket
+    fecha hora
+    comentario
 */
+
+const connection = require('../config/database_config')
+
+class Ticket {
+    
+}
